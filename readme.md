@@ -85,4 +85,4 @@ This file stores your main project directory path, your custom ignore profiles, 
 
 ## 📄 License
 
-This project is licensed under the Creative Commons BY-NC-SA 4.0 license.
+This project is licensed under MIT license.
