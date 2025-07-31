@@ -1,0 +1,1 @@
+# CodeWeaver has no external dependencies - uses only Python standard library
