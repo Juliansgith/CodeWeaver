@@ -25,12 +25,6 @@ This tool provides a powerful, visual alternative to command-line context-stuffi
 *   **🚀 Convenience Actions:** After a digest is created, use the "Show in Explorer" or "Open File" buttons for immediate access to the output.
 *   **🔄 Automatic Settings:** Your project directory, ignore list, and custom profiles are automatically saved and loaded between sessions.
 
-## 📸 Screenshot
-
-*(Note: You should replace `screenshot.png` with an actual screenshot of the application.)*
-
-![alt text](screenshot.png)
-
 ---
 
 ## 🚀 Getting Started
