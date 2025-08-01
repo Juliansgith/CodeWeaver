@@ -1,0 +1,1 @@
+# Web interface for CodeWeaver, providing a full-featured GUI

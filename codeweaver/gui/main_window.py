@@ -9,7 +9,7 @@ from ..core.models import ProcessingOptions
 from ..core import TokenEstimator, LLMProvider
 from ..utils import SystemUtils, BackgroundProcessor
 from .components import LogWidget, ProgressWidget, ProjectListWidget, RecentProjectsWidget
-from .dialogs import PreviewDialog, ProfileDialog, MessageDialog
+from .dialogs import PreviewDialog, ProfileDialog, MessageDialog, TemplateDialog
 from .token_analysis_dialog import TokenAnalysisDialog
 
 
@@ -108,6 +108,16 @@ class MainWindow(tk.Tk):
         ttk.Label(size_frame, text="Skip files larger than (MB):").pack(side=tk.LEFT, padx=(0, 5))
         self.size_limit_entry = ttk.Entry(size_frame, textvariable=self.size_limit_var, width=10)
         self.size_limit_entry.pack(side=tk.LEFT)
+
+        # Content filtering options
+        filter_frame = ttk.Frame(settings_frame)
+        filter_frame.pack(fill=tk.X, pady=(10, 0))
+        self.strip_comments_var = tk.BooleanVar()
+        self.optimize_whitespace_var = tk.BooleanVar()
+        self.intelligent_sampling_var = tk.BooleanVar()
+        ttk.Checkbutton(filter_frame, text="Strip Comments", variable=self.strip_comments_var).pack(side=tk.LEFT, padx=(0, 10))
+        ttk.Checkbutton(filter_frame, text="Optimize Whitespace", variable=self.optimize_whitespace_var).pack(side=tk.LEFT, padx=(0, 10))
+        ttk.Checkbutton(filter_frame, text="Intelligent Sampling", variable=self.intelligent_sampling_var).pack(side=tk.LEFT)
         
         # Ignore patterns
         ttk.Label(settings_frame, text="Ignore Patterns (one per line, supports wildcards like */dist/ and *.log)", 
@@ -178,6 +188,11 @@ class MainWindow(tk.Tk):
         self.build_profiles_menu(profiles_menu)
         profiles_menu.add_separator()
         profiles_menu.add_command(label="Save Current as Profile...", command=self.save_as_profile)
+
+        templates_menu = tk.Menu(self.menu_bar, tearoff=0)
+        self.menu_bar.add_cascade(label="Templates", menu=templates_menu)
+        templates_menu.add_command(label="Apply Template...", command=self.apply_template)
+        templates_menu.add_command(label="Save Current as Template...", command=self.save_as_template)
     
     def build_profiles_menu(self, menu):
         menu.delete(0, "end")
@@ -207,7 +222,10 @@ class MainWindow(tk.Tk):
             input_dir=project_path,
             ignore_patterns=ignore_patterns,
             size_limit_mb=size_limit,
-            mode=mode
+            mode=mode,
+            strip_comments=self.strip_comments_var.get(),
+            optimize_whitespace=self.optimize_whitespace_var.get(),
+            intelligent_sampling=self.intelligent_sampling_var.get()
         )
         
         # Add to recent projects if processing (not just previewing)
@@ -310,6 +328,27 @@ class MainWindow(tk.Tk):
             self.settings.add_profile(name, patterns)
             self.build_profiles_menu(self.menu_bar.winfo_children()[0])
             self.log_widget.log(f"Saved new profile: {name}")
+
+    def apply_template(self):
+        available_templates = self.template_manager.get_available_templates()
+        if not available_templates:
+            MessageDialog.show_info("No Templates", "There are no saved templates.")
+            return
+
+        dialog = TemplateDialog(self, "Apply Template", available_templates)
+        if dialog.result:
+            template = self.template_manager.get_template(dialog.result)
+            if template and 'ignore_patterns' in template:
+                self.ignore_text.delete("1.0", tk.END)
+                self.ignore_text.insert("1.0", "\n".join(template['ignore_patterns']))
+                self.log_widget.log(f"Applied template: {dialog.result}")
+
+    def save_as_template(self):
+        name = simpledialog.askstring("Save Template", "Enter a name for the new template:")
+        if name:
+            patterns = [p for p in self.ignore_text.get("1.0", tk.END).strip().split("\n") if p]
+            self.template_manager.create_template_from_project(name, Path(self.settings.project_dir), patterns)
+            self.log_widget.log(f"Saved new template: {name}")
     
     def open_output_file(self):
         if self.current_output_path:

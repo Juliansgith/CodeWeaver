@@ -26,4 +26,10 @@ class ProcessingOptions:
     input_dir: str
     ignore_patterns: List[str]
     size_limit_mb: float
-    mode: str = 'digest'  # 'digest' or 'preview'
+    mode: str
+    strip_comments: bool = False
+    optimize_whitespace: bool = False
+    intelligent_sampling: bool = False
+    sampling_strategy: str = "balanced"  # head_tail, key_sections, semantic, change_based, balanced
+    sampling_max_lines: int = 300        # Maximum lines per file after sampling
+    sampling_purpose: Optional[str] = None  # User's purpose for semantic sampling

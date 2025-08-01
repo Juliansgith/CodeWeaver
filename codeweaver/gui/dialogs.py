@@ -40,6 +40,22 @@ class MessageDialog:
     def show_error(title: str, message: str) -> None:
         messagebox.showerror(title, message)
     
-    @staticmethod
-    def show_info(title: str, message: str) -> None:
-        messagebox.showinfo(title, message)
+    
+
+class TemplateDialog(simpledialog.Dialog):
+    def __init__(self, parent, title, templates):
+        self.templates = templates
+        self.result = None
+        super().__init__(parent, title)
+
+    def body(self, master):
+        self.listbox = tk.Listbox(master, font=("Consolas", 9))
+        self.listbox.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        for template in self.templates:
+            self.listbox.insert(tk.END, template)
+        return self.listbox
+
+    def apply(self):
+        selected_indices = self.listbox.curselection()
+        if selected_indices:
+            self.result = self.listbox.get(selected_indices[0])

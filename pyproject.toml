@@ -1,0 +1,248 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codeweaver"
+dynamic = ["version"]
+authors = [
+    {name = "CodeWeaver Development Team", email = "contact@codeweaver.dev"},
+]
+description = "Intelligent Code Packaging for AI Systems"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+]
+keywords = [
+    "code analysis",
+    "ai",
+    "machine learning", 
+    "documentation",
+    "templates",
+    "codebase",
+    "packaging",
+    "embeddings",
+    "semantic search",
+    "context selection",
+]
+dependencies = [
+    "google-generativeai>=0.3.0",
+    "openai>=1.0.0",
+    "numpy>=1.21.0",
+    "click>=8.0.0",
+    "requests>=2.25.0",
+    "PyYAML>=6.0",
+    "python-dotenv>=1.0.0",
+    "chardet>=4.0.0",
+    "pygments>=2.10.0",
+    "GitPython>=3.1.0",
+    "psutil>=5.9.0",
+    "aiohttp>=3.8.0",
+    "aiohttp-cors>=0.7.0", 
+    "websockets>=10.0",
+]
+
+[project.optional-dependencies]
+web = [
+    "jinja2>=3.1.0",
+    "aiofiles>=22.0.0",
+]
+export = [
+    "reportlab>=3.6.0",
+    "Pillow>=9.0.0",
+    "markdown>=3.4.0",
+    "beautifulsoup4>=4.11.0",
+    "lxml>=4.6.0",
+    "py7zr>=0.20.0",
+]
+analytics = [
+    "pandas>=1.5.0",
+    "matplotlib>=3.5.0",
+    "plotly>=5.0.0",
+    "seaborn>=0.11.0",
+    "scikit-learn>=1.1.0",
+    "textdistance>=4.5.0",
+]
+ai = [
+    "transformers>=4.21.0",
+    "sentence-transformers>=2.2.0",
+    "torch>=1.13.0",
+    "spacy>=3.4.0",
+    "nltk>=3.7.0",
+]
+cloud = [
+    "boto3>=1.26.0",
+    "google-cloud-storage>=2.5.0",
+    "azure-storage-blob>=12.14.0",
+]
+database = [
+    "sqlalchemy>=1.4.0",
+    "redis>=4.0.0",
+]
+monitoring = [
+    "sentry-sdk>=1.9.0",
+    "structlog>=22.0.0",
+    "colorlog>=6.7.0",
+    "memory-profiler>=0.60.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "flake8>=5.0.0",
+    "mypy>=1.0.0",
+    "isort>=5.10.0",
+    "bandit>=1.7.0",
+    "pre-commit>=2.20.0",
+    "sphinx>=5.0.0",
+]
+full = [
+    # Web interface
+    "jinja2>=3.1.0",
+    "aiofiles>=22.0.0",
+    # Export formats
+    "reportlab>=3.6.0",
+    "Pillow>=9.0.0",
+    "markdown>=3.4.0",
+    "beautifulsoup4>=4.11.0",
+    "lxml>=4.6.0",
+    "py7zr>=0.20.0",
+    # Analytics
+    "pandas>=1.5.0",
+    "matplotlib>=3.5.0",
+    "plotly>=5.0.0",
+    "seaborn>=0.11.0",
+    "textdistance>=4.5.0",
+]
+
+[project.scripts]
+codeweaver = "codeweaver.cli.main:main"
+cw = "codeweaver.cli.main:main"
+codeweaver-gui = "codeweaver.web.server:start_web_server"
+
+[project.urls]
+Homepage = "https://github.com/your-org/codeweaver"
+Repository = "https://github.com/your-org/codeweaver"
+Documentation = "https://codeweaver.readthedocs.io/"
+"Bug Tracker" = "https://github.com/your-org/codeweaver/issues"
+
+[tool.setuptools]
+packages = ["codeweaver"]
+
+[tool.setuptools.dynamic]
+version = {attr = "codeweaver.__version__.__version__"}
+
+[tool.setuptools.package-data]
+codeweaver = [
+    "templates/*.json",
+    "web/static/*", 
+    "config/*.yaml",
+    "config/*.json",
+]
+
+# Development tool configurations
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = [
+    "aiohttp.*",
+    "reportlab.*",
+    "google.generativeai.*",
+    "openai.*",
+    "matplotlib.*",
+    "plotly.*",
+    "seaborn.*",
+    "pandas.*",
+    "numpy.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = [
+    "tests",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+[tool.coverage.run]
+source = ["codeweaver"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "setup.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]

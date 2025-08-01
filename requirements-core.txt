@@ -1,0 +1,12 @@
+# Core requirements - minimal installation for basic functionality
+google-generativeai>=0.3.0
+openai>=1.0.0
+numpy>=1.21.0
+click>=8.0.0
+requests>=2.25.0
+PyYAML>=6.0
+python-dotenv>=1.0.0
+chardet>=4.0.0
+pygments>=2.10.0
+GitPython>=3.1.0
+psutil>=5.9.0

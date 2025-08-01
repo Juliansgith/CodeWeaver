@@ -1,1 +1,94 @@
-# CodeWeaver has no external dependencies - uses only Python standard library
+# CodeWeaver - Full Installation Requirements
+# For specialized installations, use the specific requirements files:
+# - requirements-core.txt: Minimal installation
+# - requirements-web.txt: Web interface support
+# - requirements-export.txt: Advanced export formats
+# - requirements-analytics.txt: Data analysis features
+# - requirements-dev.txt: Development tools
+
+# Essential core dependencies
+google-generativeai>=0.3.0  # Gemini AI embeddings and generation
+openai>=1.0.0  # OpenAI embeddings and API access
+numpy>=1.21.0  # Numerical computations for embeddings
+click>=8.0.0  # Command-line interface framework
+requests>=2.25.0  # HTTP requests for API calls
+PyYAML>=6.0  # YAML configuration file support
+python-dotenv>=1.0.0  # Environment variable loading from .env files
+
+# File processing and analysis
+chardet>=4.0.0  # Character encoding detection
+gitignore-parser>=0.1.0  # Parse .gitignore files
+pygments>=2.10.0  # Syntax highlighting for code analysis
+GitPython>=3.1.0  # Git repository analysis
+psutil>=5.9.0  # System and process utilities
+
+# Web server for visual template editor
+aiohttp>=3.8.0  # Async HTTP server for template editor
+aiohttp-cors>=0.7.0  # CORS support for web interface
+websockets>=10.0  # WebSocket support for real-time updates
+jinja2>=3.1.0  # Template rendering for exports
+aiofiles>=22.0.0  # Async file operations
+
+# Export formats
+reportlab>=3.6.0  # PDF export functionality
+Pillow>=9.0.0  # Image processing for exports
+markdown>=3.4.0  # Markdown processing and generation
+beautifulsoup4>=4.11.0  # HTML parsing and generation
+lxml>=4.6.0  # XML processing for structured exports
+py7zr>=0.20.0  # 7-Zip archive support
+
+# Data analysis and visualization
+pandas>=1.5.0  # Data analysis for project statistics
+matplotlib>=3.5.0  # Chart generation in reports
+plotly>=5.0.0  # Interactive visualizations
+seaborn>=0.11.0  # Statistical data visualization
+
+# Token estimation and text processing
+tiktoken>=0.4.0  # OpenAI tokenizer
+textdistance>=4.5.0  # Text similarity metrics
+
+# Configuration and validation
+pydantic>=1.10.0  # Data validation and settings management
+jsonschema>=4.0.0  # JSON schema validation
+toml>=0.10.0  # TOML configuration support
+
+# Security
+cryptography>=3.4.0  # Cryptographic functions
+certifi>=2022.12.7  # SSL certificate verification
+
+# File monitoring and utilities
+watchdog>=2.1.0  # File system event monitoring
+python-dateutil>=2.8.0  # Extended date utilities
+
+# Optional enhanced features (install separately if needed)
+# Advanced ML/AI:
+#   transformers>=4.21.0
+#   sentence-transformers>=2.2.0
+#   torch>=1.13.0
+#   scikit-learn>=1.1.0
+#   
+# Cloud storage:
+#   boto3>=1.26.0  # AWS
+#   google-cloud-storage>=2.5.0  # Google Cloud
+#   azure-storage-blob>=12.14.0  # Azure
+#
+# Enhanced NLP:
+#   spacy>=3.4.0
+#   nltk>=3.7.0
+#
+# Database backends:
+#   sqlalchemy>=1.4.0
+#   redis>=4.0.0
+#
+# Performance monitoring:
+#   sentry-sdk>=1.9.0
+#   structlog>=22.0.0
+#   colorlog>=6.7.0
+
+# Installation commands:
+# Basic:     pip install -r requirements-core.txt
+# Web UI:    pip install -r requirements-web.txt
+# Exports:   pip install -r requirements-export.txt
+# Analytics: pip install -r requirements-analytics.txt
+# Full:      pip install -r requirements.txt
+# Dev:       pip install -r requirements-dev.txt

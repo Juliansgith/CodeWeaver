@@ -1,4 +1,5 @@
 import os
+import asyncio
 from pathlib import Path
 from typing import List, Callable, Optional
 import queue
@@ -6,6 +7,8 @@ import queue
 from .models import ProcessingResult, ProcessingStats, ProcessingOptions
 from .tokenizer import TokenEstimator, LLMProvider
 from .analyzer import TokenAnalyzer
+from .content_filter import ContentFilter
+from .content_sampler import ContentSampler, SamplingStrategy, FileSample
 
 
 class TreeGenerator:
@@ -69,6 +72,8 @@ class CodebaseProcessor:
                  progress_callback: Optional[Callable[[tuple], None]] = None):
         self.log_callback = log_callback or (lambda x: None)
         self.progress_callback = progress_callback or (lambda x: None)
+        self.content_filter = ContentFilter()
+        self.content_sampler = ContentSampler()
 
     def process(self, options: ProcessingOptions) -> ProcessingResult:
         try:
@@ -89,7 +94,7 @@ class CodebaseProcessor:
                     files=sorted(project_files)
                 )
 
-            return self._generate_digest(options.input_dir, project_files)
+            return asyncio.run(self._generate_digest(options.input_dir, project_files, options))
             
         except Exception as e:
             import traceback
@@ -121,8 +126,72 @@ class CodebaseProcessor:
                 project_files.append(file_path)
         
         return project_files
+    
+    async def _apply_intelligent_sampling(self, file_path: Path, content: str, 
+                                         language: str, options: ProcessingOptions) -> str:
+        """Apply intelligent sampling to file content."""
+        try:
+            # Map string strategy to enum
+            strategy_map = {
+                'head_tail': SamplingStrategy.HEAD_TAIL,
+                'key_sections': SamplingStrategy.KEY_SECTIONS,
+                'semantic': SamplingStrategy.SEMANTIC,
+                'change_based': SamplingStrategy.CHANGE_BASED,
+                'balanced': SamplingStrategy.BALANCED
+            }
+            
+            strategy = strategy_map.get(options.sampling_strategy, SamplingStrategy.BALANCED)
+            
+            # Apply sampling
+            sample_result = await self.content_sampler.sample_file(
+                file_path=file_path,
+                content=content,
+                language=language,
+                strategy=strategy,
+                target_lines=options.sampling_max_lines,
+                purpose=options.sampling_purpose
+            )
+            
+            # If no sampling was needed, return original content
+            if sample_result.reduction_ratio == 1.0:
+                return content
+            
+            # Build sampled content with metadata
+            sampled_content = ""
+            
+            # Add sampling information
+            if len(sample_result.sections) > 1:
+                sampled_content += f"// File sampled: {sample_result.original_size} → {sample_result.sampled_size} lines "
+                sampled_content += f"({sample_result.reduction_ratio:.1%} of original)\n"
+                sampled_content += f"// Strategy: {sample_result.strategy_used.value}\n\n"
+            
+            # Add sections
+            for i, section in enumerate(sample_result.sections):
+                if len(sample_result.sections) > 1:
+                    sampled_content += f"// --- Section {i+1}: {section.section_type} "
+                    sampled_content += f"(lines {section.start_line}-{section.end_line}) ---\n"
+                    sampled_content += f"// {section.reasoning}\n\n"
+                
+                sampled_content += section.content
+                
+                if i < len(sample_result.sections) - 1:
+                    sampled_content += "\n\n"
+            
+            return sampled_content
+            
+        except Exception as e:
+            self.log_callback(f"Intelligent sampling failed for {file_path}: {e}")
+            # Fall back to simple head/tail sampling
+            lines = content.split('\n')
+            if len(lines) > options.sampling_max_lines:
+                head_lines = options.sampling_max_lines // 2
+                tail_lines = options.sampling_max_lines - head_lines
+                head_content = '\n'.join(lines[:head_lines])
+                tail_content = '\n'.join(lines[-tail_lines:])
+                return f"{head_content}\n\n// ... (content truncated) ...\n\n{tail_content}"
+            return content
 
-    def _generate_digest(self, input_dir: str, project_files: List[Path]) -> ProcessingResult:
+    async def _generate_digest(self, input_dir: str, project_files: List[Path], options: ProcessingOptions) -> ProcessingResult:
         input_path_obj = Path(input_dir)
         output_file = input_path_obj / "codebase.md"
         
@@ -147,7 +216,20 @@ class CodebaseProcessor:
                 try:
                     with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                         content = f.read()
+                    
                     lang = file_path.suffix[1:].lower() if file_path.suffix else "text"
+                    
+                    # Apply intelligent sampling if enabled
+                    if options.intelligent_sampling:
+                        content = await self._apply_intelligent_sampling(
+                            file_path, content, lang, options
+                        )
+
+                    if options.strip_comments:
+                        content = self.content_filter.strip_comments(content, lang)
+                    if options.optimize_whitespace:
+                        content = self.content_filter.optimize_whitespace(content)
+
                     file_block = f"```{lang}\n{content.strip()}\n```\n\n"
                     md_file.write(header + file_block)
                     total_content += header + file_block

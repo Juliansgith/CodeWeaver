@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeWeaver</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <header>
+                <h1>🧩 CodeWeaver</h1>
+            </header>
+            <nav>
+                <ul>
+                    <li><a href="#digest" class="active">AI Digest</a></li>
+                    <li><a href="#chunked">Chunked Export</a></li>
+                    <li><a href="#services">AI Services</a></li>
+                    <li><a href="#analysis">Project Analysis</a></li>
+                </ul>
+            </nav>
+            <div class="recent-projects">
+                <h3>Recent Projects</h3>
+                <ul id="recent-projects-list">
+                    <!-- Recent projects will be populated here -->
+                </ul>
+            </div>
+            <footer>
+                <p>Version 2.0.0</p>
+            </footer>
+        </aside>
+
+        <main class="content">
+            <!-- AI Digest Section -->
+            <section id="digest" class="page active">
+                <h2>AI-Powered Digest</h2>
+                <p class="subtitle">Generate an intelligent, purpose-driven context file for your LLM.</p>
+                <form id="digest-form">
+                    <div class="form-group">
+                        <label for="digest-path">Project Path</label>
+                        <div class="input-group">
+                            <input type="text" id="digest-path" class="path-input" placeholder="/path/to/your/project" required>
+                            <button type="button" class="btn browse-btn" data-target="digest-path">Browse...</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="digest-purpose">Purpose / Goal</label>
+                        <input type="text" id="digest-purpose" placeholder="e.g., 'Debug user login flow' or 'Refactor the API services'" required>
+                        <small>Describe what you want to do. The AI will select the most relevant files.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="digest-budget">Token Budget</label>
+                        <input type="number" id="digest-budget" value="100000">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Digest</button>
+                </form>
+            </section>
+
+            <!-- Chunked Export Section -->
+            <section id="chunked" class="page">
+                <h2>Chunked Export</h2>
+                <p class="subtitle">Export massive codebases into smaller, manageable chunks.</p>
+                <div class="notice warning">This feature is primarily available via the CLI and is under development in the Web UI.</div>
+            </section>
+
+            <!-- AI Services Section -->
+            <section id="services" class="page">
+                <h2>AI Services</h2>
+                <p class="subtitle">Configure embedding providers and manage the MCP server.</p>
+                
+                <div class="service-card">
+                    <h3>Embedding Providers</h3>
+                    <div id="embedding-status">Loading status...</div>
+                    <form id="embedding-form">
+                        <select id="embedding-provider">
+                            <option value="gemini">Google Gemini</option>
+                            <option value="openai">OpenAI</option>
+                        </select>
+                        <input type="password" id="embedding-apikey" placeholder="Enter API Key">
+                        <button type="submit" class="btn">Save Key</button>
+                    </form>
+                </div>
+
+                <div class="service-card">
+                    <h3>MCP Server</h3>
+                    <div class="mcp-status" id="mcp-status">
+                        <span>Status: <b class="status-indicator unknown">Unknown</b></span>
+                        <span id="mcp-project-path"></span>
+                    </div>
+                    <form id="mcp-form">
+                         <div class="input-group">
+                            <input type="text" id="mcp-path" class="path-input" placeholder="/path/to/project for MCP">
+                            <button type="button" class="btn browse-btn" data-target="mcp-path">Browse...</button>
+                        </div>
+                        <div class="button-group">
+                            <button type="button" id="mcp-start-btn" class="btn btn-primary">Start Server</button>
+                            <button type="button" id="mcp-stop-btn" class="btn btn-danger" disabled>Stop Server</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Analysis Section -->
+            <section id="analysis" class="page">
+                <h2>Project Analysis</h2>
+                <p class="subtitle">Run a detailed analysis of your codebase.</p>
+                 <div class="notice info">This feature is under development in the Web UI. Use the CLI `codeweaver analyze` for full functionality.</div>
+            </section>
+        </main>
+
+        <div class="log-panel">
+            <div class="log-header">
+                <h3>Logs & Progress</h3>
+                <div id="progress-bar-container" class="progress-bar-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+                <!-- Cost Tracker Widget -->
+                <div id="cost-tracker" class="cost-tracker">
+                    <div class="cost-header">
+                        <span class="cost-icon">💰</span>
+                        <span>Live Costs</span>
+                    </div>
+                    <div class="cost-stats">
+                        <div class="cost-item">
+                            <span class="cost-label">Session:</span>
+                            <span id="session-cost" class="cost-value">$0.0000</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Today:</span>
+                            <span id="daily-cost" class="cost-value">$0.0000</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="cost-label">Tokens:</span>
+                            <span id="token-count" class="cost-value">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <pre id="log-output"></pre>
+        </div>
+    </div>
+
+    <!-- File Browser Modal -->
+    <div id="file-browser-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Select a Project Directory</h3>
+                <span class="close-button">×</span>
+            </div>
+            <div class="modal-body">
+                <div id="browser-path" class="browser-path"></div>
+                <ul id="browser-list" class="browser-list"></ul>
+            </div>
+            <div class="modal-footer">
+                <button id="select-path-btn" class="btn btn-primary">Select Current Directory</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

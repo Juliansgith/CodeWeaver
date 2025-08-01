@@ -1,0 +1,10 @@
+# Export functionality requirements - for advanced export formats
+-r requirements-core.txt
+
+# Export format dependencies
+reportlab>=3.6.0
+Pillow>=9.0.0
+markdown>=3.4.0
+beautifulsoup4>=4.11.0
+lxml>=4.6.0
+py7zr>=0.20.0

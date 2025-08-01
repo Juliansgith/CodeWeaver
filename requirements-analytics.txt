@@ -1,0 +1,10 @@
+# Analytics and visualization requirements - for advanced data analysis
+-r requirements-core.txt
+
+# Data analysis dependencies
+pandas>=1.5.0
+matplotlib>=3.5.0
+plotly>=5.0.0
+seaborn>=0.11.0
+scikit-learn>=1.1.0
+textdistance>=4.5.0
